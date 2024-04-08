@@ -1,6 +1,6 @@
 import sys
 
-file_path = sys.argv[1]
+# file_path = sys.argv[1]
 
 
 def decompress(compressed_file):
@@ -39,6 +39,7 @@ def decompress(compressed_file):
                         break
             
         return decompressed_message
+    
     except:
         print('Nie udało się otworzyć pliku')
         sys.exit()

@@ -28,6 +28,32 @@ def convert_to_bytes(binary_string):
 
   return bytes_list
 
+
+def encode(key: str, text: str):
+
+    encoded_text = ''
+
+    for i, letter in enumerate(text):
+
+        encoded_letter = chr(ord(letter) + ord(key[i % (len(key)-1)]))
+        encoded_text += encoded_letter
+
+    return encoded_text
+
+
+def decode(key: str, text: str):
+
+    decoded_text = ''
+
+    for i, letter in enumerate(text):
+        
+        decoded_letter = chr(ord(letter) - ord(key[i % (len(key)-1)]))
+        decoded_text += decoded_letter
+    
+    return decoded_text
+
+
+
 try: 
 
     with open(file_path) as f:
