@@ -1,5 +1,4 @@
 import sys
-import ast
 from scrambler import decode
 
 file_path = sys.argv[1]
@@ -19,7 +18,7 @@ def decompress(file_path):
 
     except Exception as e:
 
-        print(f'Failed to open the file: {e}')
+        print(f'Nie udało się otworzyć pliku: {e}')
         sys.exit(1)
 
     bit_amount = (len(symbols)-1).bit_length()

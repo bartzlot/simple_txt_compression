@@ -1,0 +1,4 @@
+Zaimplementowałem w kompresji i dekompresji enkrypcje na poziomie bitów, aby nie zmienić długości pliku skompresowanego. 
+Enkrypcja jest oparta na operacji XOR na poszczególnych byte'ach z dodatkiem iteratora, który ma za zadanie zmniejszyć redundancje w tekście zaszyfrowanym.
+Podczas kompresji mozemy dobrać długość klucza do własnych potrzeb.
+W celu łatwiejszego operowania kluczem, przy kazdym wygenerowaniu i uyciu jest on konwertowany z bitów na postać hexadecymalną i na odwrót.
