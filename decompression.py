@@ -1,48 +1,45 @@
 import sys
+import ast
+from scrambler import decode
 
-# file_path = sys.argv[1]
+file_path = sys.argv[1]
+decryption_key = sys.argv[2]
+decryption_key = bytes.fromhex(decryption_key)
 
-
-def decompress(compressed_file):
+def decompress(file_path):
+    decompressed_text = ''
 
     try:
-        with open(compressed_file, 'rb') as f:
+        with open(file_path, 'rb') as f:
 
-            byte = f.read(1)
-            f.seek(1)
-            dict_len = int.from_bytes(byte, 'big')
-            dict = list(f.read(dict_len).decode('utf-8'))
+            dict_len = int.from_bytes(f.read(1), byteorder='big')
+            symbols = [int.from_bytes(f.read(1), byteorder='big') for _ in range(dict_len)]
+            compressed_data = f.read()
+            compressed_data = decode(decryption_key, compressed_data)
 
-            bit_amount = (len(dict)-1).bit_length()
+    except Exception as e:
 
-            compressed_text = f.read()
-            compressed_text = bin(int.from_bytes(compressed_text, 'big'))[2:]
+        print(f'Failed to open the file: {e}')
+        sys.exit(1)
 
-            if len(compressed_text)%8 != 0:
-                compressed_text = '0' * (8 - len(compressed_text) % 8) + compressed_text
+    bit_amount = (len(symbols)-1).bit_length()
+    decompression_keys = [{'letter' : letter, 'bin_rep': format(i, f'0{bit_amount}b')} for i, letter in enumerate(symbols)]
 
-            redundat_bits = int(compressed_text[:3], 2)
+    binary_string = ''.join(format(byte, '08b') for byte in compressed_data)
+    redundant_bits_amount = int(binary_string[:3], 2)
+    binary_string = binary_string[3:-redundant_bits_amount]
 
-            for i, letter in enumerate(dict):
-                dict[i] = {'letter' : letter,
-                        'bin_rep': format(i, f'0{bit_amount}b')}
-            decompressed_message = ''
-            letter = ''
+    for i in range(0, len(binary_string), bit_amount):
+        bin_rep = binary_string[i:i+bit_amount]
 
-            for integer in compressed_text[3:-redundat_bits]:
+        for item in decompression_keys:
 
-                letter += str(integer)
-                for item in dict:
-                    if item['bin_rep'] == letter:
-                        decompressed_message += item['letter']
-                        letter = ''
-                        break
-            
-        return decompressed_message
-    
-    except:
-        print('Nie udało się otworzyć pliku')
-        sys.exit()
+            if item['bin_rep'] == bin_rep:
+                decompressed_text += chr(item['letter'])
+
+                break
+
+    return decompressed_text
 
 
 def write_file(decompressed_message):
